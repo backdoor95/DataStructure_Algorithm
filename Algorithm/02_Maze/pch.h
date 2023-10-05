@@ -4,6 +4,8 @@
 #include<windows.h>
 #include<iostream>
 #include<vector>
+#include<queue>
+#include<map>
 using namespace std;
 
 struct Pos

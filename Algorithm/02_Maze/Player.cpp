@@ -8,13 +8,41 @@ void Player::Init(Board* board)
 	_pos = board->GetEnterPos();
 	_board = board;
 
+	//RightHand();
+	Bfs();
+	
+}
+
+void Player::Update(uint64 deltaTick)
+{
+	if (_pathIndex >= _path.size())
+		return;
+
+	_sumTick += deltaTick;
+	if (_sumTick >= MOVE_TICK)
+	{
+		_sumTick = 0;
+		_pos = _path[_pathIndex];
+		_pathIndex++;
+	}
+
+}
+
+bool Player::CanGo(Pos pos)
+{
+	TileType tileType = _board->GetTileType(pos);
+	return tileType == TileType::EMPTY;
+}
+
+void Player::RightHand()
+{
 	Pos pos = _pos;
 
 	_path.clear();// init을 2번 호출 했을까봐 노파심에 클리어를 한번해줌
 	_path.push_back(pos);
 
 	// 목적지 도착하기 전에는 계속 실행
-	Pos dest = board->GetExitPos();
+	Pos dest = _board->GetExitPos();
 
 	Pos front[4] =
 	{
@@ -38,7 +66,7 @@ void Player::Init(Board* board)
 			_path.push_back(pos);
 		}
 		// 2. 현재 바라보는 방향을 기준으로 전진할 수 있는지 확인
-		else if(CanGo(pos + front[_dir]))
+		else if (CanGo(pos + front[_dir]))
 		{
 			// 앞으로 한 보 전진
 			pos += front[_dir];
@@ -68,7 +96,7 @@ void Player::Init(Board* board)
 
 	stack<Pos> s;
 
-	for (int i = 0; i < _path.size()-1; i++)// 맨 마지막을 목적이여서 1를 빼준다.
+	for (int i = 0; i < _path.size() - 1; i++)// 맨 마지막을 목적이여서 1를 빼준다.
 	{
 		if (s.empty() == false && s.top() == _path[i + 1])
 			s.pop();
@@ -92,23 +120,70 @@ void Player::Init(Board* board)
 	_path = path;
 }
 
-void Player::Update(uint64 deltaTick)
+void Player::Bfs()
 {
-	if (_pathIndex >= _path.size())
-		return;
+	Pos pos = _pos;
 
-	_sumTick += deltaTick;
-	if (_sumTick >= MOVE_TICK)
+	// 목적지 도착하기 전에는 계속 실행
+	Pos dest = _board->GetExitPos();
+
+	Pos front[4] =
 	{
-		_sumTick = 0;
-		_pos = _path[_pathIndex];
-		_pathIndex++;
+		Pos { -1, 0},// UP
+		Pos { 0, -1},// LEFT
+		Pos { 1, 0},// DOWN
+		Pos { 0, 1}// RIGHT
+	};
+
+	const int32 size = _board->GetSize();
+	vector<vector<bool>> discovered(size, vector<bool>(size, false));
+
+	//vector<vector<Pos>> parent;
+	// parent[A] = B; -> A는 B로 인해 발견함.
+	map<Pos, Pos> parent;
+
+	queue<Pos> q;
+	q.push(pos);
+	discovered[pos.y][pos.x] = true;
+	parent[pos] = pos;
+
+	while (q.empty() == false)
+	{
+		pos = q.front();
+		q.pop();
+
+		// 방문!
+		if (pos == dest)
+			break;
+
+		for (int32 dir = 0; dir < 4; dir++)
+		{
+			Pos nextPos = pos + front[dir];
+			// 갈 수 있는 지역은 맞는지 확인
+			if (CanGo(nextPos) == false)
+				continue;
+			// 이미 발견한 지역인지 확인.
+			if (discovered[nextPos.y][nextPos.x])
+				continue;
+
+			q.push(nextPos);
+			discovered[nextPos.y][nextPos.x] = true;
+		}
 	}
 
-}
 
-bool Player::CanGo(Pos pos)
-{
-	TileType tileType = _board->GetTileType(pos);
-	return tileType == TileType::EMPTY;
+	// TODO
+	_path.clear();// init을 2번 호출 했을까봐 노파심에 클리어를 한번해줌
+	
+	// 거꾸로 거슬러 올라간다.
+	pos = dest;
+
+	while (true)
+	{
+		_path.push_back(pos);
+
+		// 시작점은 자신이 곧
+	}
+	
+	_path.push_back(pos);
 }
