@@ -182,8 +182,12 @@ void Player::Bfs()
 	{
 		_path.push_back(pos);
 
-		// 시작점은 자신이 곧
+		// 시작점은 자신이 곧 부모이다
+		if (pos == parent[pos])
+			break;
+
+		pos = parent[pos];
 	}
 	
-	_path.push_back(pos);
+	reverse(_path.begin(), _path.end());
 }
