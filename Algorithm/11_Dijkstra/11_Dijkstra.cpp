@@ -80,7 +80,7 @@ void Dijkstra(int here)
 
 			// 더 좋은 경로를 과거에 찾았다면 스킵
 			int nextCost = best[here] + adjacent[here][there];
-			if (nextCost >= best[there])
+			if (nextCost >= best[there]) // 25 vs 35
 				continue;
 
 			discovered.push_back(VertexCost{ there, nextCost });
