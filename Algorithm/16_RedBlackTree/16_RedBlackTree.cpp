@@ -9,6 +9,7 @@
 using namespace std;
 
 // 오늘의 주제 : 이진 탐색 트리
+//	Red Black Tree는 난이도가 높기 때문에 코딩 테스트에서 나올 가능성이 작다!! 
 int main()
 {
 	BinarySearchTree bst;
