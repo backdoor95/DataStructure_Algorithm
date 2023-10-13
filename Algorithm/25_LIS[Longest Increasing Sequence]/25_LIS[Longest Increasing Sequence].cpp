@@ -9,6 +9,7 @@ using namespace std;
 
 // 오늘의 주제 : 동적 계획법(DP)
 // LIS (Longest Increasing Sequence)
+// 이 문제는 DP문제의 정석이다.
 
 // Seq : 1 9 2 5 7
 // 부분 수열 : 일부(0개이상) 숫자를 지우고 남은 수열
@@ -69,6 +70,8 @@ int main()
     
 
     int ret = 0;
+
+    // 모든 애들을 시작점으로 가정하고 시작하기 위해서
     for (int pos = 0; pos < seq.size(); pos++)
     {
         ret = max(ret, LIS(pos));
