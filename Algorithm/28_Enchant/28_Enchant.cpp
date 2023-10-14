@@ -36,7 +36,7 @@ int Enchant(int num)
 
 
 	// 적용
-	Enchant(num + 1);
+	int ret = Enchant(num + 1) + Enchant(num + 2) + Enchant(num + 3);
 
 }
 
@@ -46,6 +46,7 @@ int main()
 	N = 9;
 
 	memset(cache, -1, sizeof(cache));
-
+	int ret = Enchant(0);
+	cout << ret << endl;
 }
 
